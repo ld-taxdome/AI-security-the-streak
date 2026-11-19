@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Streak</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  --bg: #f5f8ff; --surface: #ffffff; --ink: #0e0e0e; --muted: #454f68;
+  --blue: #266de8; --blue-text: #1c56c4; --yellow: #ffe629; --soft: #e6eeff; --paper: #fffdf3;
+  --line: #0e0e0e; --shadow: #0e0e0e; --dot: rgba(38, 109, 232, 0.16);
+  --good-bg: #d9e6ff; --bad-bg: #ffe0dc; --bad: #d2403d; --bad-text: #a8221f;
+  --green: #1f9d57; --green-bg: #d8f3e3; --amber-bg: #fff4a8;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg: #0b1020; --surface: #151c33; --ink: #f5f8ff; --muted: #aeb9d6; --blue-text: #8db1ff; --soft: #1d2848; --paper: #1b233d; --line: #dfe7ff; --shadow: #2b3a73; --dot: rgba(141, 177, 255, 0.14); --good-bg: #16305f; --bad-bg: #4a2027; --bad: #e0504d; --bad-text: #ff9f9f; --green: #2fb36a; --green-bg: #12392a; --amber-bg: #3d3710; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --bg: #0b1020; --surface: #151c33; --ink: #f5f8ff; --muted: #aeb9d6; --blue-text: #8db1ff; --soft: #1d2848; --paper: #1b233d; --line: #dfe7ff; --shadow: #2b3a73; --dot: rgba(141, 177, 255, 0.14); --good-bg: #16305f; --bad-bg: #4a2027; --bad: #e0504d; --bad-text: #ff9f9f; --green: #2fb36a; --green-bg: #12392a; --amber-bg: #3d3710; color-scheme: dark; }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); height: 100%; }
+*, *::before, *::after { box-sizing: inherit; }
+body { margin: 0; min-height: 100%; background: var(--bg); color: var(--ink); font: 400 17px/1.55 "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif; overflow-x: hidden; }
+body::before { content: ""; position: fixed; inset: 0; z-index: -2; pointer-events: none; background-image: radial-gradient(circle, var(--dot) 2px, transparent 2.6px); background-size: 34px 34px; }
+.deco { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.deco i { position: absolute; border-radius: 50%; }
+.deco .a { width: 420px; height: 420px; background: var(--yellow); opacity: 0.3; right: -150px; top: -130px; }
+.deco .b { width: 540px; height: 540px; background: var(--blue); opacity: 0.14; left: -220px; bottom: -220px; }
+h1, h2, h3 { font-family: "Bricolage Grotesque", "Instrument Sans", system-ui, sans-serif; margin: 0; line-height: 1.1; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 4px solid var(--blue); outline-offset: 3px; }
+.top { background: var(--blue); border-bottom: 3px solid var(--line); }
+.top-in { max-width: 940px; margin: 0 auto; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.logo { display: block; height: 34px; width: auto; }
+.top-tag { color: #fff; font-weight: 600; font-size: 15px; }
+.wrap { max-width: 940px; margin: 0 auto; padding: 26px 18px 72px; display: grid; gap: 30px; }
+.card { background: var(--surface); border: 3px solid var(--line); border-radius: 26px; box-shadow: 8px 8px 0 var(--shadow); padding: 26px; }
+.hero { text-align: center; padding: 34px 26px 30px; }
+.title { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 14px; font-size: clamp(42px, 11vw, 72px); font-weight: 800; letter-spacing: -0.03em; }
+.stk { display: inline-block; padding: 6px 20px 10px; border: 3px solid var(--line); border-radius: 18px; box-shadow: 5px 5px 0 var(--shadow); }
+.stk.s1 { background: var(--blue); color: #fff; transform: rotate(-3deg); }
+.stk.s2 { background: var(--yellow); color: #0e0e0e; transform: rotate(2.5deg); }
+.lead { max-width: 34em; margin: 22px auto 0; font-size: 19px; }
+.lamp { display: inline-block; width: 20px; height: 20px; border-radius: 50%; border: 3px solid var(--line); flex: none; }
+.lamp.g { background: var(--green); } .lamp.c { background: var(--yellow); } .lamp.i { background: var(--blue); } .lamp.n { background: var(--bad); }
+.dots { display: flex; gap: 10px; justify-content: center; margin-top: 22px; flex-wrap: wrap; }
+.dot { width: 42px; height: 42px; border-radius: 50%; border: 3px solid var(--line); display: grid; place-items: center; font: 800 17px/1 "Bricolage Grotesque", system-ui, sans-serif; background: var(--surface); transition: background 0.3s; }
+.dot.cur { background: var(--yellow); color: #0e0e0e; } .dot.ok { background: var(--blue); color: #fff; } .dot.no { background: var(--bad); color: #fff; }
+.ptext { margin-top: 10px; font-weight: 600; color: var(--muted); }
+.file { position: relative; padding-top: 38px; margin-top: 12px; }
+.tab { position: absolute; left: 24px; top: -16px; background: var(--yellow); color: #0e0e0e; border: 3px solid var(--line); border-radius: 12px 12px 0 0; padding: 4px 16px; font: 800 17px/1.3 "Bricolage Grotesque", system-ui, sans-serif; }
+.chip { display: inline-block; background: var(--tc, var(--soft)); color: #0e0e0e; border: 2px solid var(--line); border-radius: 999px; padding: 2px 12px; font-weight: 600; font-size: 14px; line-height: 1.5; vertical-align: middle; }
+.t-hr { --tc: #ffb8d0; } .t-marketing { --tc: #d4c2ff; } .t-support { --tc: #a8ccff; } .t-operations { --tc: #ffcf99; } .t-sales { --tc: #ffadad; } .t-revops { --tc: #ffe629; } .t-cs { --tc: #9fe3e6; }
+.file h2 { font-size: clamp(24px, 5vw, 32px); font-weight: 800; letter-spacing: -0.02em; margin-top: 8px; }
+.q { font: 800 20px/1.3 "Bricolage Grotesque", system-ui, sans-serif; margin: 22px 0 12px; }
+.res { margin-top: 22px; display: grid; gap: 12px; }
+.res[hidden] { display: none; }
+.verdict { padding: 14px 18px; border: 3px solid var(--line); border-radius: 18px; box-shadow: 5px 5px 0 var(--shadow); animation: rise 0.35s ease-out; }
+.verdict.right { background: var(--good-bg); } .verdict.wrong { background: var(--bad-bg); }
+.verdict h3 { font-size: 22px; font-weight: 800; }
+.verdict p { margin: 4px 0 0; }
+.box { background: var(--soft); border: 3px solid var(--line); border-radius: 16px; padding: 12px 16px; }
+.box b { font: 800 16px/1.3 "Bricolage Grotesque", system-ui, sans-serif; display: block; margin-bottom: 2px; }
+.remember { display: inline-block; justify-self: start; background: var(--yellow); color: #0e0e0e; border: 3px solid var(--line); border-radius: 14px; padding: 8px 16px; font: 800 18px/1.3 "Bricolage Grotesque", system-ui, sans-serif; box-shadow: 4px 4px 0 var(--shadow); transform: rotate(-1deg); }
+.fixbox { border: 2px dashed var(--line); border-radius: 14px; padding: 10px 14px; background: var(--surface); }
+.fixbox b { font: 800 16px/1.3 "Bricolage Grotesque", system-ui, sans-serif; display: block; }
+.btn { display: inline-flex; cursor: pointer; margin-top: 4px; background: var(--yellow); color: #0e0e0e; border: 3px solid var(--line); border-radius: 16px; padding: 12px 24px; font: 800 19px/1.1 "Bricolage Grotesque", system-ui, sans-serif; box-shadow: 5px 5px 0 var(--shadow); transition: transform 0.12s, box-shadow 0.12s; }
+.btn:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 var(--shadow); }
+.btn:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--shadow); }
+.tally { text-align: center; }
+.tally[hidden] { display: none; }
+.tally h2 { font-size: clamp(30px, 7vw, 44px); font-weight: 800; letter-spacing: -0.025em; }
+.tally > p { margin: 10px auto 0; max-width: 32em; font-size: 19px; }
+.rows { list-style: none; margin: 22px 0 0; padding: 0; display: grid; gap: 10px; text-align: left; }
+.rows li { display: flex; gap: 12px; align-items: center; background: var(--soft); border: 3px solid var(--line); border-radius: 16px; padding: 10px 14px; font-size: 16px; line-height: 1.35; }
+.rows .mk { flex: none; width: 34px; height: 34px; border-radius: 50%; border: 3px solid var(--line); display: grid; place-items: center; font: 800 16px/1 "Bricolage Grotesque", system-ui, sans-serif; background: var(--blue); color: #fff; }
+.rows .mk.no { background: var(--bad); }
+.rows b { font-family: "Bricolage Grotesque", system-ui, sans-serif; font-weight: 800; }
+.sheet { margin-top: 24px; text-align: left; display: grid; gap: 10px; }
+.sheet h3 { font-size: 22px; font-weight: 800; text-align: center; margin-bottom: 4px; }
+.sheet div { display: flex; gap: 12px; align-items: flex-start; border: 3px solid var(--line); border-radius: 16px; padding: 10px 14px; background: var(--surface); }
+.sheet .lamp { margin-top: 3px; }
+.next { text-align: center; font: 800 20px/1.3 "Bricolage Grotesque", system-ui, sans-serif; margin: 0; }
+@keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes stampIn { 0% { opacity: 0; transform: rotate(-24deg) scale(2.6); } 70% { opacity: 1; transform: rotate(-7deg) scale(0.94); } 100% { opacity: 0.92; transform: rotate(-9deg) scale(1); } }
+@media (max-width: 640px) {
+  .card { padding: 18px; border-radius: 22px; box-shadow: 6px 6px 0 var(--shadow); }
+  .card.file { padding-top: 38px; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+.legend { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 24px 0 0; text-align: left; }
+.lgt { background: var(--soft); border: 3px solid var(--line); border-radius: 18px; padding: 12px 14px; font-size: 15px; line-height: 1.4; font-weight: 500; }
+.lgt b { display: block; font: 800 17px/1.2 "Bricolage Grotesque", system-ui, sans-serif; margin-bottom: 4px; }
+.note-inv { margin-top: 14px; font-size: 14px; color: var(--muted); }
+.meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.clock { font-weight: 600; color: var(--muted); }
+.streak { margin-left: auto; display: inline-flex; align-items: center; gap: 10px; background: var(--accent); color: #0e0e0e; border: 3px solid var(--line); border-radius: 999px; padding: 4px 16px; font: 800 18px/1.3 "Bricolage Grotesque", system-ui, sans-serif; }
+.streak.broke { background: var(--bad); color: #fff; }
+.b { max-width: 90%; padding: 11px 16px; border: 2px solid var(--line); border-radius: 18px; font-size: 17px; line-height: 1.45; animation: rise 0.3s ease-out; margin-top: 14px; background: var(--surface); border-bottom-left-radius: 6px; display: flex; gap: 12px; align-items: flex-start; }
+.b .av { width: 38px; height: 38px; font-size: 14px; border-radius: 50%; border: 2px solid var(--line); display: grid; place-items: center; background: var(--tc, var(--accent)); color: #0e0e0e; font-family: "Bricolage Grotesque", system-ui, sans-serif; font-weight: 800; flex: none; }
+.mail { margin-top: 14px; border: 3px solid var(--line); border-radius: 18px; background: var(--paper); padding: 16px 22px 20px; font-size: 19px; line-height: 1.65; }
+.mail .hd { font-size: 15px; color: var(--muted); line-height: 1.5; margin-bottom: 10px; border-bottom: 2px solid var(--soft); padding-bottom: 8px; }
+.claim { font: inherit; color: inherit; cursor: pointer; background: var(--amber-bg); border: 0; border-bottom: 3px dashed var(--ink); padding: 0 4px; border-radius: 4px; text-align: left; }
+.claim:hover:not([disabled]) { background: var(--yellow); color: #0e0e0e; }
+.claim.ok { background: var(--good-bg); border-bottom-style: solid; } .claim.no { background: var(--bad-bg); border-bottom-style: solid; }
+.claim[disabled] { cursor: default; }
+.claim .mk { font: 800 14px/1 "Bricolage Grotesque", system-ui, sans-serif; margin-left: 4px; }
+.hint { margin: 12px 0 0; font-size: 15px; color: var(--muted); }
+.checks { display: grid; gap: 8px; margin-top: 12px; }
+.chk { border: 2px solid var(--line); border-radius: 14px; padding: 8px 14px; font-size: 16px; line-height: 1.4; background: var(--surface); animation: rise 0.25s ease-out; }
+.chk.ok { background: var(--good-bg); } .chk.no { background: var(--bad-bg); }
+.chk b { font-family: "Bricolage Grotesque", system-ui, sans-serif; font-weight: 800; }
+.acts { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; align-items: center; }
+.btn.alt { background: var(--surface); }
+.btn[disabled] { opacity: 0.45; cursor: default; box-shadow: none; transform: none; }
+.reply { border: 3px solid var(--line); border-radius: 16px; padding: 12px 16px; background: var(--bad-bg); font-size: 17px; }
+.reply b { font-family: "Bricolage Grotesque", system-ui, sans-serif; font-weight: 800; }
+@media (max-width: 760px) { .legend { grid-template-columns: 1fr; } .streak { margin-left: 0; } }
+
+</style>
+</head>
+<body>
+<div class="deco" aria-hidden="true"><i class="a"></i><i class="b"></i></div>
+<header class="top">
+  <div class="top-in">
+    <svg class="logo" role="img" aria-label="TaxDome" viewBox="0 0 120 32" width="128" height="34"><path d="M10.5356 3.37849C11.3829 2.90571 12.4132 2.87566 13.2834 3.28941L13.4548 3.37849L15.1444 4.32389C15.4687 4.50548 15.5262 4.91904 15.3533 5.20702C15.1864 5.48465 14.8167 5.62805 14.5061 5.45511L12.7885 4.49918V4.49822C12.2924 4.22151 11.6808 4.22162 11.1845 4.49822L2.10366 9.58055C1.60913 9.85854 1.30614 10.3687 1.30456 10.9187V21.0814L1.31996 21.2854C1.38689 21.7565 1.67502 22.1779 2.1104 22.4195H2.11136L11.1922 27.5019C11.6886 27.7787 12.3 27.7787 12.7962 27.5019L21.8771 22.4195L22.0533 22.3056C22.4426 22.0144 22.675 21.5636 22.6762 21.0824V10.9187C22.6748 10.4376 22.4424 9.98688 22.0533 9.6955L21.8771 9.58055L21.1598 9.17922C20.8382 8.99902 20.7781 8.58995 20.947 8.30183C21.1128 8.0197 21.4858 7.87303 21.7991 8.048L22.5366 8.45987L22.7012 8.56045C23.5066 9.08438 23.9979 9.96591 24 10.9177V21.0824C24 22.0955 23.4459 23.031 22.5472 23.5402H22.5462L13.4653 28.6226H13.4644C12.5605 29.1259 11.4491 29.126 10.5453 28.6226L1.46341 23.5402C0.560342 23.0338 0.00167075 22.0978 1.89029e-07 21.0824V10.9187C-0.000373914 9.90528 0.554559 8.96976 1.45379 8.46083V8.45987L10.5356 3.37849ZM11.4811 14.6073H8.85655V19.6916H7.16399V14.6073H4.53947V13.0757H11.4811V14.6073ZM15.5324 13.0757C17.6291 13.0757 19.1514 14.4655 19.1515 16.3822C19.1515 18.2991 17.6292 19.6916 15.5324 19.6916H12.8434V13.0757H15.5324ZM14.5359 18.1887H15.5324V18.1849C16.6441 18.1848 17.3904 17.4692 17.3906 16.3918C17.3906 15.3141 16.6443 14.5902 15.5324 14.5901H14.5359V18.1887ZM18.1271 5.36315C18.9244 5.36341 19.5712 5.98965 19.5712 6.76257C19.5712 7.53545 18.9244 8.16173 18.1271 8.16198C17.3295 8.16198 16.683 7.53561 16.6829 6.76257C16.6829 5.9895 17.3295 5.36315 18.1271 5.36315Z" fill="#FFFFFF"/><path d="M88.0975 9.99988C91.8513 9.99988 94.5377 12.6691 94.5377 16.0003C94.5375 19.3313 91.8088 21.9997 88.0553 21.9999C84.3017 21.9999 81.6154 19.3314 81.6151 16.0003C81.6151 12.7024 84.3439 10.0001 88.0975 9.99988ZM120 12.4586H113.399V14.8118H119.136V17.0947H113.399V19.5332H120V21.8021H110.74V10.1862H120V12.4586ZM54.2883 21.8012H51.4946L50.3843 19.1983H45.2374L44.1271 21.8012H41.398L46.6059 10.1159H49.075L54.2883 21.8012ZM41.7881 12.5527H37.2339V21.7995H34.5506L34.5569 12.5527H30V10.1985H41.7881V12.5527ZM61.0577 13.96L63.6316 10.1985H66.671L62.5958 15.8658L66.8378 21.7995H63.7168L60.9859 17.8235L58.2407 21.7995H55.2004L59.4398 15.8992L55.3753 10.1985H58.5035L61.0577 13.96ZM73.4736 10.1985C77.2969 10.1987 79.9398 12.7015 79.9398 15.9994C79.9394 19.297 77.2967 21.7993 73.4736 21.7995H68.7293V10.1985H73.4736ZM102.509 15.094L105.705 10.1862H108.589V21.7924H105.931V14.2185L102.509 19.172H102.44L99.0506 14.28V21.7924H96.4265V10.1862H99.3116L102.509 15.094ZM88.0661 12.3531C85.9117 12.3531 84.417 13.9773 84.4169 15.9986C84.4171 18.0196 85.9466 19.6528 88.1011 19.6528C90.2553 19.6526 91.7492 18.0195 91.7494 15.9986C91.7493 14.0107 90.2204 12.3533 88.0661 12.3531ZM71.4055 19.4963H73.4736C75.6628 19.4963 77.1414 18.0861 77.1417 15.9986C77.1417 13.9108 75.6631 12.5008 73.4736 12.5008H71.4055V19.4963ZM46.1979 16.9435H49.4175L47.8077 13.1829L46.1979 16.9435Z" fill="#FFFFFF"/></svg>
+    <span class="top-tag">AI Security course</span>
+  </div>
+</header>
+<main class="wrap">
+  <section class="card hero" aria-labelledby="pageTitle">
+    <h1 class="title" id="pageTitle"><span class="stk s1">The</span><span class="stk s2">Streak</span></h1>
+    <p class="lead">You have sent 40 AI-drafted client replies in a row, and every one was fine. Six more are in the queue. Check what you think needs checking, then decide.</p>
+    <div class="legend">
+      <div class="lgt"><b>Underlined claims</b>Tap one to look it up in the source.</div>
+      <div class="lgt"><b>Send as it is</b>The reply goes to the customer exactly as written.</div>
+      <div class="lgt"><b>Fix and send</b>Available once you have found a claim that is wrong.</div>
+    </div>
+    <p class="note-inv">All product details in this game are invented.</p>
+    <div class="dots" id="dots" aria-hidden="true"></div>
+    <div class="ptext" id="ptext" role="status">Reply 1 of 6</div>
+  </section>
+
+  <div id="stage"></div>
+
+  <section class="card tally" id="tally" role="status" hidden>
+    <h2 id="tHead"></h2>
+    <p id="tText"></p>
+    <ul class="rows" id="rows"></ul>
+    <div class="sheet">
+      <h3>What to take from the streak</h3>
+      <div><span><b>Read all of it.</b> Not just the first line.</span></div>
+      <div><span><b>Check each specific claim.</b> Dates, versions, prices, policy details: against a real source, every time.</span></div>
+      <div><span><b>Own it.</b> A long run of good drafts did not make the next one safe.</span></div>
+    </div>
+    <button type="button" class="btn" id="again" style="margin-top:22px">Work the queue again</button>
+  </section>
+
+  <p class="next">Next: Game 2, Cross-exam.</p>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  var MAILS = [
+    { who: "Greta", firm: "Birch Accounting", subj: "Bulk reminders", cls: "support", nudge: "",
+      parts: ["Hi Greta,<br>Thanks for asking about bulk reminders. They ", "c1", " and are ", "c2", ". You can switch them on under Settings, and I’m happy to walk you through it.<br>Best, Alex"],
+      claims: {
+        c1: { t: "launched on 21 March in version 4.2", ok: 1, src: "Release notes", says: "Bulk reminders were released on 21 March, in version 4.2." },
+        c2: { t: "available on the Pro and Business plans", ok: 1, src: "Release notes", says: "Bulk reminders are available on the Pro and Business plans." } },
+      err: null },
+    { who: "Omar", firm: "Cedar & Co", subj: "Pro plan price", cls: "sales", nudge: "That’s 41 in a row. Just send it.",
+      parts: ["Hi Omar,<br>The Pro plan costs ", "c1", ". I can send a written quote for your whole team if that helps.<br>Best, Alex"],
+      claims: { c1: { t: "$59 per user per month when billed annually", ok: 1, src: "Price list", says: "Pro: $59 per user per month, billed annually." } },
+      err: null },
+    { who: "Priya", firm: "Northside Tax", subj: "Cancelling", cls: "hr", nudge: "42 in a row. They’re always fine.",
+      parts: ["Hi Priya,<br>If you cancel, you can ", "c1", ". I’ll add a note to your account so you get a reminder before the window closes.<br>Best, Alex"],
+      claims: { c1: { t: "export your data for 90 days afterwards", ok: 1, src: "Policy page", says: "Data export is available for 90 days after cancellation." } },
+      err: null },
+    { who: "Sam", firm: "Harbor Advisory", subj: "Document scanning", cls: "operations", nudge: "43 in a row. You’ve got this. Just send it.",
+      parts: ["Hi Sam,<br>Document scanning on iOS ", "c1", " as part of the ", "c2", ". Android is ", "c3", ".<br>Best, Alex"],
+      claims: {
+        c1: { t: "arrived on 2 April", ok: 0, src: "Release notes", says: "Document scanning on iOS was released on 14 February, in mobile app 3.8.", fix: "arrived on 14 February" },
+        c2: { t: "3.8 mobile release", ok: 1, src: "Release notes", says: "Document scanning on iOS shipped in the 3.8 mobile release." },
+        c3: { t: "planned, and I’ll let you know when there is a date", ok: 1, src: "Release notes", says: "Android scanning: planned, no date yet." } },
+      err: { kind: "date", who: "Sam", say: "That’s not right. Your own announcement said February, and I’ve already told my team April. Which is it?" } },
+    { who: "Lena", firm: "Pine Row CPAs", subj: "Duplicate invoices", cls: "marketing", nudge: "Just send it. You’re on a roll.",
+      parts: ["Hi Lena,<br>The fix for duplicate invoices shipped in ", "c1", ". ", "c2", " and it applies automatically.<br>Best, Alex"],
+      claims: {
+        c1: { t: "mobile app version 3.9", ok: 0, src: "Release notes", says: "The duplicate invoice fix is in mobile app version 3.8.1.", fix: "mobile app version 3.8.1" },
+        c2: { t: "Update from your app store", ok: 1, src: "Release notes", says: "Mobile app updates are delivered through the app store." } },
+      err: { kind: "version", who: "Lena", say: "I looked for 3.9 in the app store and there isn’t one. I’m on 3.8 and the duplicates are still there." } },
+    { who: "Chen", firm: "Atlas Books", subj: "Refund", cls: "support", nudge: "Last one. Same as always. Just send it.",
+      parts: ["Hi Chen,<br>You can request a refund ", "c1", ". The money goes ", "c2", ", and I’ll confirm once it’s processed.<br>Best, Alex"],
+      claims: {
+        c1: { t: "within 60 days of the invoice date", ok: 0, src: "Policy page", says: "Refunds can be requested within 30 days of the invoice date.", fix: "within 30 days of the invoice date" },
+        c2: { t: "back to the original payment method", ok: 1, src: "Policy page", says: "Refunds go back to the original payment method." } },
+      err: { kind: "policy detail", who: "Chen", say: "You said 60 days. Billing just told me 30. I already promised my client a refund." } }
+  ];
+
+  var $ = function (s) { return document.querySelector(s); };
+  var stage = $("#stage"), dotsEl = $("#dots"), ptext = $("#ptext"), tally = $("#tally");
+  var cur = 0, log = [], streak = 40, minutes = 0, S = null;
+
+  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
+  function drawDots() {
+    dotsEl.innerHTML = "";
+    MAILS.forEach(function (m, n) {
+      var d = document.createElement("span"), r = log[n];
+      d.className = "dot" + (r ? (r.pts >= 2 ? " ok" : " no") : (n === cur ? " cur" : ""));
+      d.textContent = r ? String(r.pts) : String(n + 1);
+      dotsEl.appendChild(d);
+    });
+  }
+
+  function mailHtml(m) {
+    return m.parts.map(function (p) {
+      if (m.claims[p]) { return '<button type="button" class="claim" data-c="' + p + '">' + esc(m.claims[p].t) + '</button>'; }
+      return p;
+    }).join("");
+  }
+
+  function show() {
+    var m = MAILS[cur];
+    S = { checked: [], done: false };
+    tally.hidden = true;
+    ptext.textContent = "Reply " + (cur + 1) + " of " + MAILS.length;
+    drawDots();
+    stage.innerHTML =
+      '<article class="card file">' +
+        '<span class="tab">Reply ' + (cur + 1) + '</span>' +
+        '<div class="meta"><span class="chip t-' + m.cls + '">Support</span><span class="clock">AI draft for ' + esc(m.who) + ', ' + esc(m.firm) + '</span><span class="streak" id="st">Streak: ' + streak + '</span></div>' +
+        (m.nudge ? '<div class="b"><span class="av t-operations">JO</span><span><b>Jordan</b><br>' + esc(m.nudge) + '</span></div>' : '') +
+        '<div class="mail"><div class="hd">To: ' + esc(m.who) + ', ' + esc(m.firm) + '<br>Subject: ' + esc(m.subj) + '</div>' + mailHtml(m) + '</div>' +
+        '<p class="hint">Tap an underlined claim to look it up in the source. Each look-up takes a minute.</p>' +
+        '<div class="checks" id="checks"></div>' +
+        '<div class="acts"><button type="button" class="btn" id="send">Send as it is</button><button type="button" class="btn alt" id="fix" disabled>Fix and send</button><span class="clock" id="min"></span></div>' +
+        '<div class="res" id="res" hidden role="status"></div>' +
+      '</article>';
+    updMin();
+    stage.querySelectorAll(".claim").forEach(function (b) { b.addEventListener("click", function () { check(b); }); });
+    $("#send").addEventListener("click", function () { act(false); });
+    $("#fix").addEventListener("click", function () { act(true); });
+  }
+
+  function updMin() { var el = $("#min"); if (el) { el.textContent = "Checking time so far: " + minutes + " min"; } }
+
+  function check(b) {
+    if (S.done) return;
+    var m = MAILS[cur], id = b.getAttribute("data-c"), c = m.claims[id];
+    if (S.checked.indexOf(id) > -1) return;
+    S.checked.push(id); minutes++; updMin();
+    b.classList.add(c.ok ? "ok" : "no");
+    b.insertAdjacentHTML("beforeend", '<span class="mk">' + (c.ok ? " \u2713" : " \u2717") + '</span>');
+    var d = document.createElement("div");
+    d.className = "chk " + (c.ok ? "ok" : "no");
+    d.innerHTML = '<b>' + esc(c.src) + '</b>: ' + esc(c.says) + ' <b>' + (c.ok ? "Matches." : "Does not match.") + '</b>';
+    $("#checks").appendChild(d);
+    var found = S.checked.some(function (k) { return !m.claims[k].ok; });
+    $("#fix").disabled = !found;
+  }
+
+  function act(fix) {
+    if (S.done) return;
+    S.done = true;
+    var m = MAILS[cur], ids = Object.keys(m.claims), all = ids.every(function (k) { return S.checked.indexOf(k) > -1; });
+    var hasErr = !!m.err, caught = fix && hasErr;
+    var right = hasErr ? caught : true;
+    var pts = (all ? 1 : 0) + (right ? 1 : 0);
+    var errSent = hasErr && !caught;
+    if (errSent) { streak = 0; } else { streak++; }
+    log[cur] = { pts: pts, all: all, errSent: errSent, caught: caught, hasErr: hasErr };
+    drawDots();
+    var st = $("#st"); st.textContent = "Streak: " + streak; st.className = "streak" + (errSent ? " broke" : "");
+    $("#send").disabled = true; $("#fix").disabled = true;
+    stage.querySelectorAll(".claim").forEach(function (b) { b.disabled = true; });
+    var res = $("#res"); res.hidden = false;
+    var last = (cur === MAILS.length - 1), body;
+    if (errSent) {
+      body = '<div class="reply"><b>' + esc(m.err.who) + ' replies:</b> “' + esc(m.err.say) + '”</div>' +
+        '<div class="verdict wrong"><h3>The error reached a customer.</h3><p>The ' + esc(m.err.kind) + ' was wrong, and it was the ' + (all ? "one you saw but sent anyway" : "claim you did not check") + '. Your streak is back to zero.</p></div>';
+    } else if (caught) {
+      var fixes = ids.filter(function (k) { return !m.claims[k].ok; }).map(function (k) { return "“" + m.claims[k].t + "” became “" + m.claims[k].fix + "”"; }).join("; ");
+      body = '<div class="verdict right"><h3>Caught it.</h3><p>The ' + esc(m.err.kind) + ' was wrong: ' + esc(fixes) + '. The streak did not help, and your check did.</p></div>';
+    } else {
+      body = '<div class="verdict ' + (all ? "right" : "wrong") + '"><h3>' + (all ? "Clean, and you know it." : "Fine this time. You didn’t know that when you sent it.") + '</h3><p>' + (all ? "You checked every claim before it went out." : "You sent it without checking every claim. It happened to be correct. The next one might not be.") + '</p></div>';
+    }
+    res.innerHTML = body + '<div><button type="button" class="btn" id="nextBtn">' + (last ? "See how the queue went" : "Next reply") + '</button></div>';
+    $("#nextBtn").addEventListener("click", function () { if (last) { finish(); } else { cur++; show(); stage.scrollIntoView({ behavior: "smooth", block: "start" }); } });
+    $("#nextBtn").focus({ preventScroll: true });
+    res.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  function finish() {
+    stage.innerHTML = "";
+    ptext.textContent = "Queue cleared";
+    drawDots();
+    tally.hidden = false;
+    var total = log.reduce(function (t, l) { return t + l.pts; }, 0), sent = log.filter(function (l) { return l.errSent; }).length, ver = log.filter(function (l) { return l.all; }).length;
+    $("#tHead").textContent = total + " of 12 points";
+    $("#tText").textContent = (sent === 0 ? "Nothing wrong reached a customer. " : sent + (sent === 1 ? " error" : " errors") + " reached customers. ") + "You verified every claim in " + ver + " of 6 replies. The three errors were in replies 4, 5 and 6, straight after the longest run of clean ones. You spent " + minutes + " minutes checking.";
+    $("#rows").innerHTML = MAILS.map(function (m, n) {
+      var l = log[n];
+      return '<li><span class="mk' + (l.pts >= 2 ? "" : " no") + '">' + l.pts + '</span><span><b>' + (n + 1) + ". " + esc(m.who) + " (" + esc(m.subj) + ")</b><br>" + (l.hasErr ? "Had an error. " + (l.caught ? "You caught it." : "It went out.") : "Was clean. ") + " Every claim checked: " + (l.all ? "yes" : "no") + ".</span></li>";
+    }).join("");
+    tally.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  $("#again").addEventListener("click", function () { cur = 0; log = []; streak = 40; minutes = 0; show(); window.scrollTo({ top: 0, behavior: "smooth" }); });
+  show();
+})();
+</script>
+</body>
+</html>
